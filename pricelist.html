@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Horse Stone — Прайс-лист на плитку</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f0ec;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* Два экземпляра для печати */
+        .invoice-pair {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        .invoice-print-duplicate {
+            display: none;
+        }
+        @media print {
+            body { background: none !important; padding: 0 !important; }
+            .toolbar { display: none !important; }
+            .invoice-pair {
+                flex-direction: column;
+                gap: 0;
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            #invoice, .invoice-print-duplicate {
+                width: 100%;
+                max-width: 100%;
+                height: 50%;
+                min-height: 0;
+                box-shadow: none;
+                margin: 0;
+                page-break-inside: avoid;
+                transform: none;
+                position: relative;
+            }
+            .invoice-print-duplicate { display: block !important; }
+        }
+
+        /* ===== INVOICE ===== */
+        #invoice {
+            width: 1000px;
+            max-width: 100%;
+            background: #f5f0ec;
+            padding: 50px 60px 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+
+        /* Watermark corners */
+        .watermark {
+            position: absolute;
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .watermark.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            width: 220px;
+            height: 220px;
+            opacity: 0.07;
+        }
+
+        /* Logo area */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-img {
+            width: 260px;
+            height: auto;
+        }
+
+        /* Header */
+        .invoice-header {
+            text-align: center;
+            margin: 24px 0 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .invoice-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #3a3024;
+        }
+
+        .invoice-date {
+            font-size: 16px;
+            color: #6a5a44;
+            margin-top: 4px;
+        }
+
+        /* Table */
+        .invoice-table-wrap {
+            margin: 28px 0 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: linear-gradient(180deg, #8B6914 0%, #a07a1a 100%);
+            color: #fff;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 12px 10px;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        thead th:first-child { border-radius: 6px 0 0 0; }
+        thead th:last-child { border-radius: 0 6px 0 0; }
+
+        tbody td {
+            padding: 10px 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #3a3024;
+            border-bottom: 1px solid #d9cdb8;
+            background: rgba(255,255,255,0.35);
+        }
+
+        tbody tr:nth-child(even) td {
+            background: rgba(196, 169, 106, 0.05);
+        }
+
+        tbody tr:hover td {
+            background: rgba(196, 169, 106, 0.15);
+            transition: background 0.3s ease;
+        }
+
+        tbody td:nth-child(1) {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: none; padding: 0; }
+            .toolbar { display: none !important; }
+            #invoice { box-shadow: none; width: 100%; padding: 30px 40px; }
+        }
+
+        /* Column widths */
+        .col-name { width: auto; }
+        .col-price-60 { width: 120px; }
+        .col-price-40 { width: 120px; }
+
+        /* Warranty */
+        .warranty {
+            margin-top: 28px;
+            padding: 16px 20px;
+            background: rgba(196, 169, 106, 0.08);
+            border-left: 3px solid #c4a96a;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #6a5a44;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #6a5a44;
+            border-top: 1px solid #d9cdb8;
+            padding-top: 20px;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+
+        /* Mobile styles (screen only) */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: stretch;
+            }
+
+            .invoice-pair {
+                width: 100%;
+                gap: 12px;
+            }
+
+            #invoice {
+                width: 100%;
+                padding: 18px 14px 20px;
+                border-radius: 10px;
+            }
+
+            .watermark.bottom-right {
+                width: 120px;
+                height: 120px;
+                right: 10px;
+                bottom: 10px;
+            }
+
+            .logo-img {
+                width: 190px;
+            }
+
+            .invoice-header {
+                margin: 14px 0 6px;
+            }
+
+            .invoice-title {
+                font-size: 21px;
+                line-height: 1.3;
+            }
+
+            .invoice-date {
+                font-size: 15px;
+            }
+
+            .invoice-table-wrap {
+                margin-top: 16px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 680px;
+            }
+
+            thead th,
+            tbody td {
+                font-size: 16px;
+            }
+
+            .warranty {
+                margin-top: 20px;
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+
+            .footer {
+                margin-top: 26px;
+                padding-top: 14px;
+                font-size: 13px;
+                line-height: 1.45;
+                text-align: left;
+            }
+        }
+
+        @media screen and (max-width: 430px) {
+            .invoice-title {
+                font-size: 19px;
+            }
+
+            table {
+                min-width: 620px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- INVOICE -->
+<div class="invoice-pair">
+    <div id="invoice">
+
+    <!-- Watermarks -->
+    <div class="watermark bottom-right">
+        <img src="whs.png" alt="" style="width:100%;height:100%;object-fit:contain;">
+    </div>
+
+    <!-- Logo -->
+    <div class="logo-section">
+        <img src="whs.png" alt="White Horse Stone" class="logo-img">
+    </div>
+
+    <!-- Title -->
+    <div class="invoice-header">
+        <div class="invoice-title">
+            Прайс-лист на плитку
+        </div>
+        <div class="invoice-date">
+            6 мая 2026 г.
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="invoice-table-wrap">
+        <table id="priceTable">
+            <thead>
+                <tr>
+                    <th class="col-name">Наименование</th>
+                    <th class="col-price-60">Цена 60мм (₽/м²)</th>
+                    <th class="col-price-40">Цена 40мм (₽/м²)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td colspan="3" style="text-align: center; font-weight: bold; background: #f4ede1; color: #3a3024; padding: 16px 10px; border-radius: 8px; margin: 10px 0; border: 1px solid rgba(139,105,20,0.2);">
+                        <svg width="24" height="24" fill="#8B6914" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Новый город
+                    </td>
+                </tr>
+                <tr>
+                    <td>Серый</td>
+                    <td>900</td>
+                    <td>850</td>
+                </tr>
+                <tr>
+                    <td>Цветная</td>
+                    <td>1050</td>
+                    <td>950</td>
+                </tr>
+                <tr>
+                    <td>Белый цемент</td>
+                    <td>1300</td>
+                    <td>1150</td>
+                </tr>
+                <tr>
+                    <td>Белый цемент + Цветная</td>
+                    <td>1350</td>
+                    <td>1400</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (2 цвета)</td>
+                    <td>1150</td>
+                    <td>1050</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (3 цвета)</td>
+                    <td>1250</td>
+                    <td>1150</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (2 цвета) + Белый цемент</td>
+                    <td>1450</td>
+                    <td>1350</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: center; font-weight: bold; background: #f4ede1; color: #3a3024; padding: 16px 10px; border-radius: 8px; margin: 10px 0; border: 1px solid rgba(139,105,20,0.2);">
+                        <svg width="24" height="24" fill="#8B6914" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Старый город
+                    </td>
+                </tr>
+                <tr>
+                    <td>Серый</td>
+                    <td>900</td>
+                    <td>850</td>
+                </tr>
+                <tr>
+                    <td>Цветная</td>
+                    <td>1050</td>
+                    <td>950</td>
+                </tr>
+                <tr>
+                    <td>Белый цемент</td>
+                    <td>1300</td>
+                    <td>1150</td>
+                </tr>
+                <tr>
+                    <td>Белый цемент + Цветная</td>
+                    <td>1350</td>
+                    <td>1400</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (2 цвета)</td>
+                    <td>1150</td>
+                    <td>1050</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (3 цвета)</td>
+                    <td>1250</td>
+                    <td>1150</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (2 цвета) + Белый цемент</td>
+                    <td>1450</td>
+                    <td>1350</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: center; font-weight: bold; background: #f4ede1; color: #3a3024; padding: 16px 10px; border-radius: 8px; margin: 10px 0; border: 1px solid rgba(139,105,20,0.2);">
+                        <svg width="24" height="24" fill="#8B6914" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Кирпич
+                    </td>
+                </tr>
+                <tr>
+                    <td>Серый</td>
+                    <td>770</td>
+                    <td>730</td>
+                </tr>
+                <tr>
+                    <td>Цветная</td>
+                    <td>950</td>
+                    <td>800</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (2 цвета)</td>
+                    <td>1050</td>
+                    <td>1000</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (3 цвета)</td>
+                    <td>1150</td>
+                    <td>1100</td>
+                </tr>
+                <tr>
+                    <td>Белый цемент</td>
+                    <td>1250</td>
+                    <td>1150</td>
+                </tr>
+                <tr>
+                    <td>Цветная + Белый цемент</td>
+                    <td>1350</td>
+                    <td>1250</td>
+                </tr>
+                <tr>
+                    <td>Color Mix (2 цвета) + Белый цемент</td>
+                    <td>1450</td>
+                    <td>1350</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Warranty -->
+    <div class="warranty">
+        Цены указаны за квадратный метр. Без учета доставки. Возможны скидки при оптовых заказах. Консультация по выбору и расчету — бесплатно.
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>White Horse Stone</strong></p>
+            <p>Телефон: +7 (993) 262-13-22</p>
+            <p>Адрес: городской округ Щёлково, Московская область, Академическая улица, 3, деревня Долгое Лёдово</p>
+            <p>Сайт: whitehorsestone.ru</p>
+    </div>
+
+    </div>
+    <!-- Дубликат для печати -->
+    <div class="invoice-print-duplicate">
+        <!-- Watermarks -->
+        <div class="watermark bottom-right">
+            <img src="whs.png" alt="" style="width:100%;height:100%;object-fit:contain;">
+        </div>
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="whs.png" alt="White Horse Stone" class="logo-img">
+        </div>
+        <!-- Title -->
+        <div class="invoice-header">
+            <div class="invoice-title">
+                Прайс-лист на плитку
+            </div>
+            <div class="invoice-date">
+                6 мая 2026 г.
+            </div>
+        </div>
+        <!-- Table -->
+        <div class="invoice-table-wrap">
+            <table id="priceTableCopy"></table>
+        </div>
+        <!-- Warranty -->
+        <div class="warranty">
+            Цены указаны за квадратный метр. Без учета доставки. Возможны скидки при оптовых заказах. Консультация по выбору и расчету — бесплатно.
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>White Horse Stone</strong></p>
+            <p>Телефон: +7 (993) 262-13-22</p>
+            <p>Адрес: городской округ Щёлково, Московская область, Академическая улица, 3, деревня Долгое Лёдово</p>
+            <p>Сайт: whitehorsestone.ru</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Копирование данных в дубликат для печати
+    function copyPriceForPrint() {
+        // Копируем таблицу
+        document.getElementById('priceTableCopy').innerHTML = document.getElementById('priceTable').innerHTML;
+    }
+    // Перед печатью копируем данные
+    window.addEventListener('beforeprint', copyPriceForPrint);
+</script>
+
+</body>
+</html>
